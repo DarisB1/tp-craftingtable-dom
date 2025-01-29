@@ -84,23 +84,6 @@ function createBtnInventory(name, imgSrc) {
 	return button;
 }
 
-function validMaterial(tab1, tab2) {
-	for (let i = 0; i <= tab1.length; i++) {
-		for (let j = 0; j <= tab2.length; j++) {
-			if (tab1[i] !== tab2[j]) {
-				
-				// const imgPickAxe = caseResult.firstElementChild;
-				
-				// if (imgPickAxe == null) return;
-
-				// imgPickAxe.src = pickaxeRecipeImageSrc;
-				// imgPickAxe.alt = "Pick axe";
-				return false
-			}
-		}
-	}
-}
-
 for (let i = 0; i < inventoryTable.length; i++) {
 	const newItemNumber = inventoryTable[i];
 	const materialName = materials[newItemNumber];
@@ -110,7 +93,7 @@ for (let i = 0; i < inventoryTable.length; i++) {
 
 	newButton.addEventListener("click", () => {
 
-			if (pipette == materialName && selecedImgSrc == materialImgSrc && newButton.classList.contains("active")) {
+			if (pipette == materialName && newButton.classList.contains("active")) {
 				pipette = "";
 				selecedImgSrc = "";
 				newButton.classList.remove("active");
@@ -124,9 +107,19 @@ for (let i = 0; i < inventoryTable.length; i++) {
 				btnOldActive = newButton;
 				
 			}
+			
 		console.log(btnOldActive, pipette, selecedImgSrc);
 	});
 	Inventaire.appendChild(newButton);
+}
+
+function validMaterial(tab1, tab2) {
+	for (let i = 0; i <= tab1.length; i++) {
+			if (tab1[i] !== tab2[i]) {
+				return false
+			}
+	}
+	return true
 }
 
 for (const caseCraftObject of caseCraft) {
@@ -137,8 +130,12 @@ for (const caseCraftObject of caseCraft) {
 
 		newImg.src = selecedImgSrc;
 		newImg.alt = pipette;
-		let result = console.log(validMaterial(pickaxeRecipe, craftingTable));
-		console.log(result, craftingTable, pickaxeRecipe);
+		for (let i = 0; i < caseCraft.length; i++) {
+			craftingTable.splice(pickaxeRecipe[i], 1, pipette);			
+		}
+		console.log(pipette);
+		// let result = console.log(validMaterial(pickaxeRecipe, craftingTable));
+		console.log(craftingTable, pickaxeRecipe);
 		
 	})
 }
