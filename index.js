@@ -1,35 +1,46 @@
 const MATERIAL_IRON_INGOT_ID = "IRON-INGOT";
 const MATERIAL_STICK_ID = "STICK";
 const MATERIAL_AIR_ID = "";
-const MATERIAL_DIAMANT_ID = "DIAMOND";
-const MATERIAL_NAEL_ID = "NAEL";
+const MATERIAL_DIAMANT_ID = "DIAMANT";
 
 
 const MATERIAL_AIR_IMG = "./assets/air.webp";
 const MATERIAL_IRON_INGOT_IMG = "./assets/iron-ingot.webp";
 const MATERIAL_STICK_IMG = "./assets/stick.webp";
-const MATERIAL_DIAMOND_IMG = "./assets/diamond-ingot.webp";
-const MATERIAL_NAEL_IMG = "./assets/nael.webp";
+const MATERIAL_DIAMANT_IMG = "./assets/diamant-ingot.webp";
+
 
 const materials = [
 	MATERIAL_AIR_ID,
 	MATERIAL_IRON_INGOT_ID,
 	MATERIAL_STICK_ID,
 	MATERIAL_DIAMANT_ID,
-	MATERIAL_NAEL_ID,
+
 ];
 const materialsImageSrc = [
 	MATERIAL_AIR_IMG,
 	MATERIAL_IRON_INGOT_IMG,
 	MATERIAL_STICK_IMG,
-	MATERIAL_DIAMOND_IMG,
-	MATERIAL_NAEL_IMG,
+	MATERIAL_DIAMANT_IMG,
+
 ];
 
 const pickaxeRecipe = [
 	MATERIAL_IRON_INGOT_ID,
 	MATERIAL_IRON_INGOT_ID,
 	MATERIAL_IRON_INGOT_ID,
+	MATERIAL_AIR_ID,
+	MATERIAL_STICK_ID,
+	MATERIAL_AIR_ID,
+	MATERIAL_AIR_ID,
+	MATERIAL_STICK_ID,
+	MATERIAL_AIR_ID,
+];
+
+const DiamantPickaxeRecipe = [
+	MATERIAL_DIAMANT_ID,
+	MATERIAL_DIAMANT_ID,
+	MATERIAL_DIAMANT_ID,
 	MATERIAL_AIR_ID,
 	MATERIAL_STICK_ID,
 	MATERIAL_AIR_ID,
@@ -51,24 +62,35 @@ const axeRecipe = [
 ];
 
 const pickaxeRecipeImageSrc = "./assets/iron-pickaxe.webp";
+const DiamantPickaxeRecipeImageSrc = "./assets/diamant-pickaxe.webp";
 const axeRecipeImageSrc = "./assets/iron-axe.webp";
 
-const recipeList = [pickaxeRecipe, axeRecipe];
-const recipeImageSrcList = [pickaxeRecipeImageSrc, axeRecipeImageSrc];
+
+const recipeList = [
+	pickaxeRecipe,
+	axeRecipe,
+	DiamantPickaxeRecipe,
+
+];
+const recipeImageSrcList = [
+	pickaxeRecipeImageSrc,
+	axeRecipeImageSrc,
+	DiamantPickaxeRecipeImageSrc,
+
+];
 
 const craftingTable = ["", "", "", "", "", "", "", "", ""];
-const inventoryTable = [2, 1, 3];
+const inventoryTable = [2, 1, 3, 4, 5];
 
 // Coder ici
 
 const Inventaire = document.getElementById("divInventaire");
 const caseCraft = document.querySelectorAll(".caseCraft");
-const caseResult = document.getElementById("result");
+const imgCaseResult = document.getElementById("result-image");
 
 let pipette = "";
 let selecedImgSrc = "";
 let btnOldActive = null;
-
 
 function createBtnInventory(name, imgSrc) {
 	const button = document.createElement("button");
@@ -92,37 +114,35 @@ for (let i = 0; i < inventoryTable.length; i++) {
 	const newButton = createBtnInventory(materialName, materialImgSrc);
 
 	newButton.addEventListener("click", () => {
-
-			if (pipette == materialName && newButton.classList.contains("active")) {
-				pipette = "";
-				selecedImgSrc = "";
-				newButton.classList.remove("active");
-			}else {
-				if (btnOldActive != null) {
-					btnOldActive.classList.remove("active");
-				}
-				pipette = materialName;
-				selecedImgSrc = materialImgSrc;
-				newButton.classList.add("active");
-				btnOldActive = newButton;
-				
+		if (pipette == materialName && newButton.classList.contains("active")) {
+			pipette = "";
+			selecedImgSrc = "";
+			newButton.classList.remove("active");
+		} else {
+			if (btnOldActive != null) {
+				btnOldActive.classList.remove("active");
 			}
-			
-		console.log(btnOldActive, pipette, selecedImgSrc);
+			pipette = materialName;
+			selecedImgSrc = materialImgSrc;
+			newButton.classList.add("active");
+			btnOldActive = newButton;
+		}
 	});
 	Inventaire.appendChild(newButton);
 }
 
 function validMaterial(tab1, tab2) {
 	for (let i = 0; i <= tab1.length; i++) {
-			if (tab1[i] !== tab2[i]) {
-				return false
-			}
+		if (tab1[i] !== tab2[i]) {
+			return false;
+		}
 	}
-	return true
+	return true;
 }
 
-for (const caseCraftObject of caseCraft) {
+for (let i = 0; i < caseCraft.length; i++) {
+	const caseCraftObject = caseCraft[i];
+
 	caseCraftObject.addEventListener("click", () => {
 		const newImg = caseCraftObject.firstElementChild;
 
@@ -130,15 +150,43 @@ for (const caseCraftObject of caseCraft) {
 
 		newImg.src = selecedImgSrc;
 		newImg.alt = pipette;
-		for (let i = 0; i < caseCraft.length; i++) {
-			craftingTable.splice(pickaxeRecipe[i], 1, pipette);			
+
+		craftingTable[i] = pipette;
+		for (let i = 0; i < recipeList.length; i++) {
+			const isValid = validMaterial(recipeList[i], craftingTable);
+
+			if (isValid != false) {
+				imgCaseResult.src = recipeImageSrcList[i];
+				imgCaseResult.alt = "outil";
+				break;
+			} else {
+				imgCaseResult.src = MATERIAL_AIR_IMG;
+				imgCaseResult.alt = MATERIAL_AIR_ID;
+			}
+
+			const invButton = document.createElement("button");
+			invButton.classList.add("objectInventaire");
+
+			imgCaseResult.addEventListener("click", () => {
+				invButton.appendChild(imgCaseResult);
+				Inventaire.appendChild(invButton);
+			});
 		}
-		console.log(pipette);
-		// let result = console.log(validMaterial(pickaxeRecipe, craftingTable));
-		console.log(craftingTable, pickaxeRecipe);
-		
-	})
+	});
 }
+
+/*
+		for (let i = 0; i < caseCraft.length; i++) {
+			const imgCaseCraft = caseCraft[i].querySelector("img");
+			if (imgCaseCraft && imgCaseCraft.alt.toLowerCase() !== "air") {
+				craftingTable[i] = imgCaseCraft.alt;
+			}else {
+				craftingTable[i] = "";
+			}
+		}
+		console.log(validMaterial(pickaxeRecipe, craftingTable, pickaxeRecipeImageSrc));
+		console.log(validMaterial(axeRecipe, craftingTable, axeRecipeImageSrc));
+		console.log(craftingTable, pickaxeRecipe)*/
 
 // function newElement(tag, attributes = {}) {
 // 	const element = document.createElement(tag);
@@ -149,11 +197,10 @@ for (const caseCraftObject of caseCraft) {
 // 	return element;
 // }
 
-
-		// if (craftingTable[0] == pickaxeRecipe[0] && craftingTable[1] == MATERIAL_IRON_INGOT_IMG && craftingTable[2] == MATERIAL_IRON_INGOT_IMG && craftingTable[4] == MATERIAL_AIR_IMG && craftingTable[5] == MATERIAL_STICK_IMG && craftingTable[6] == MATERIAL_AIR_IMG && craftingTable[7] == MATERIAL_AIR_IMG && craftingTable[8] == MATERIAL_STICK_IMG && craftingTable[9] == MATERIAL_AIR_IMG) {
-		// 	caseResult = pickaxeRecipeImageSrc;
-		// }
-	/*
+// if (craftingTable[0] == pickaxeRecipe[0] && craftingTable[1] == MATERIAL_IRON_INGOT_IMG && craftingTable[2] == MATERIAL_IRON_INGOT_IMG && craftingTable[4] == MATERIAL_AIR_IMG && craftingTable[5] == MATERIAL_STICK_IMG && craftingTable[6] == MATERIAL_AIR_IMG && craftingTable[7] == MATERIAL_AIR_IMG && craftingTable[8] == MATERIAL_STICK_IMG && craftingTable[9] == MATERIAL_AIR_IMG) {
+// 	caseResult = pickaxeRecipeImageSrc;
+// }
+/*
 	const btnInventory = newElement("button", { className: "objectInventaire" });
 	if (materials[newItem] == materials[1]) {
 		btnInventory.addEventListener("click", () => {
@@ -169,7 +216,7 @@ for (const caseCraftObject of caseCraft) {
 	}
 	if (materials[newItem] == materials[3]) {
 		btnInventory.addEventListener("click", () => {
-			pipette = MATERIAL_DIAMOND_IMG;
+			pipette = MATERIAL_DIAMANT_IMG;
 			console.log(pipette);
 		});
 	}
